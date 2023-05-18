@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 chrono-humanize = "0.2.2"
-clap = "4.2.7"
+clap = { version = "4.2.7", features = ["derive"] }
 clap_complete = "4.2.3"
 uptime_lib = "0.2.2"
