@@ -1,11 +1,17 @@
 use clap::{CommandFactory, Parser, Subcommand, Command, crate_version};
 use clap_complete::{generate, Generator, Shell};
 use std::io;
-use std::{thread, time};
+use std::time;
+use std::io::{stdout, Write};
 use std::ops::Sub;
+use std::sync::mpsc::channel;
 use chrono::{DateTime, Duration, Local, Utc};
 use chrono;
 use chrono_humanize::{Accuracy, Tense};
+use crossterm::{
+    execute,
+    cursor::{Hide, Show},
+};
 
 #[derive(Parser)]
 #[clap(author="Christophe Kamphaus", about="A simple uptime CLI tool")]
@@ -67,6 +73,19 @@ fn render_duration(start: DateTime<Utc>, iso: bool) -> String {
     return formatted.replace(" and", ",");
 }
 
+/// Overwrite the previous line when printing the next one, passing the length of the line to be overwritten
+fn clear_line(line_length: usize) {
+    for _i in 0..line_length {
+        print!("{}", '\r')
+    }
+    for _i in 0..line_length { // clear the line with spaces in case the next line is shorter
+        print!("{}", ' ')
+    }
+    for _i in 0..line_length {
+        print!("{}", '\r')
+    }
+}
+
 fn main() {
     let cli = Cli::parse();
     match &cli.command {
@@ -104,15 +123,34 @@ fn main() {
     }
     if cli.watch {
         let sleep_millis = time::Duration::from_millis(5);
-        // TODO: hide the cursor
+        let (tx, rx) = channel();
+        ctrlc::set_handler(move || tx.send(()).expect("Could not send signal on channel."))
+            .expect("Error setting Ctrl-C handler");
+        execute!(
+            stdout(),
+            Hide
+        ).expect("Could not hide terminal cursor.");
         loop {
-            // print the duration
+            // print the current duration
             let duration = render_duration(start, cli.iso);
             print!("{}", duration);
-            thread::sleep(sleep_millis);
-            for _i in 1..duration.len() {
-                print!("{}", '\r')
+
+            // need to flush before waiting so we are sure that the up-to-date duration is displayed
+            stdout().flush().expect("Could not flush stdout");
+
+            if rx.recv_timeout(sleep_millis).is_ok() {
+                // Received SIGTERM, perform cleanup by showing cursor again, go to a new line
+                // so that the next prompt is displayed cleanly before terminating.
+                execute!(
+                    stdout(),
+                    Show
+                ).expect("Could not hide terminal cursor.");
+                println!();
+                break;
             }
+
+            // Clear line after wait to minimize the time an empty line is displayed.
+            clear_line(duration.len())
         }
     } else {
         println!("{}", render_duration(start, cli.iso))
