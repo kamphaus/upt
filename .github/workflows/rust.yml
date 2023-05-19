@@ -20,3 +20,5 @@ jobs:
       run: cargo build --verbose --frozen
     - name: Run tests
       run: cargo test --verbose
+    - name: Lint
+      run: cargo clippy -- -Dwarnings
