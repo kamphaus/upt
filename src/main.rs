@@ -7,7 +7,7 @@ use std::io::{stdout, Write};
 use std::ops::Sub;
 use std::sync::mpsc::channel;
 use chrono::{DateTime, Duration, Local, Utc};
-use chrono;
+
 use chrono_humanize::{Accuracy, Tense};
 use crossterm::{
     execute,
@@ -61,7 +61,7 @@ fn print_start(start: DateTime<Local>, strict_iso: bool) {
     if strict_iso {
         println!("Started {:?}", start);
     } else {
-        println!("Started {}", start.format("%Y-%m-%d %H:%M:%S").to_string());
+        println!("Started {}", start.format("%Y-%m-%d %H:%M:%S"));
     }
 }
 
@@ -72,19 +72,19 @@ fn render_duration(start: DateTime<Utc>, iso: bool) -> String {
     }
     let truncated = Duration::seconds(duration.num_seconds());
     let formatted = chrono_humanize::HumanTime::from(truncated).to_text_en(Accuracy::Precise, Tense::Present);
-    return formatted.replace(" and", ",");
+    formatted.replace(" and", ",")
 }
 
 /// Overwrite the previous line when printing the next one, passing the length of the line to be overwritten
 fn clear_line(line_length: usize) {
     for _i in 0..line_length {
-        print!("{}", '\r')
+        print!("\r")
     }
     for _i in 0..line_length { // clear the line with spaces in case the next line is shorter
-        print!("{}", ' ')
+        print!(" ")
     }
     for _i in 0..line_length {
-        print!("{}", '\r')
+        print!("\r")
     }
 }
 
@@ -110,7 +110,7 @@ fn get_start_time() -> Result<DateTime<Utc>, String> {
         return Ok(start_uptime)
     }
     let parsed_datetime = persisted_uptime.unwrap();
-    return Ok(parsed_datetime.max(start_uptime))
+    Ok(parsed_datetime.max(start_uptime))
 }
 
 fn get_file_path() -> BoxResult<PathBuf> {
@@ -122,20 +122,20 @@ fn get_file_path() -> BoxResult<PathBuf> {
         None => bail!("Impossible to get your home dir!"),
     }
     p.push(".upt");
-    return Ok(p)
+    Ok(p)
 }
 
 fn persist_time(dt: DateTime<Utc>) -> BoxResult<()> {
     let path = get_file_path()?;
     let mut file = File::create(path.as_path())?;
     file.write_all(dt.to_rfc3339().as_bytes())?;
-    return Ok(())
+    Ok(())
 }
 
 fn read_time() -> BoxResult<DateTime<Utc>> {
     let persisted = fs::read_to_string(get_file_path()?)?;
     let parsed = DateTime::parse_from_rfc3339(persisted.as_str())?;
-    return Ok(parsed.with_timezone(&Utc))
+    Ok(parsed.with_timezone(&Utc))
 }
 
 fn main() {
