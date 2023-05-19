@@ -1,22 +1,22 @@
-use clap::{CommandFactory, Parser, Subcommand, Command, crate_version};
+use chrono::{DateTime, Duration, Local, Utc};
+use clap::{crate_version, Command, CommandFactory, Parser, Subcommand};
 use clap_complete::{generate, Generator, Shell};
-use std::{fs, io};
 use std::fs::File;
-use std::time;
 use std::io::{stdout, Write};
 use std::ops::Sub;
 use std::sync::mpsc::channel;
-use chrono::{DateTime, Duration, Local, Utc};
+use std::time;
+use std::{fs, io};
 
 use chrono_humanize::{Accuracy, Tense};
 use crossterm::{
-    execute,
     cursor::{Hide, Show},
+    execute,
 };
 use simple_error::bail;
 
 #[derive(Parser)]
-#[clap(author="Christophe Kamphaus", about="A simple uptime CLI tool")]
+#[clap(author = "Christophe Kamphaus", about = "A simple uptime CLI tool")]
 #[command(author, about, long_about = None)]
 struct Cli {
     /// Reset the uptime to now
@@ -46,9 +46,7 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands {
     /// Generate autocompletion scripts for upt for the specified shell.
-    Completion {
-        shell: Shell
-    },
+    Completion { shell: Shell },
 }
 
 /// Prints the given autocompletion for the passed shell and command to stdout
@@ -68,10 +66,11 @@ fn print_start(start: DateTime<Local>, strict_iso: bool) {
 fn render_duration(start: DateTime<Utc>, iso: bool) -> String {
     let duration = Utc::now().sub(start);
     if iso {
-        return duration.to_string()
+        return duration.to_string();
     }
     let truncated = Duration::seconds(duration.num_seconds());
-    let formatted = chrono_humanize::HumanTime::from(truncated).to_text_en(Accuracy::Precise, Tense::Present);
+    let formatted =
+        chrono_humanize::HumanTime::from(truncated).to_text_en(Accuracy::Precise, Tense::Present);
     formatted.replace(" and", ",")
 }
 
@@ -80,7 +79,8 @@ fn clear_line(line_length: usize) {
     for _i in 0..line_length {
         print!("\r")
     }
-    for _i in 0..line_length { // clear the line with spaces in case the next line is shorter
+    for _i in 0..line_length {
+        // clear the line with spaces in case the next line is shorter
         print!(" ")
     }
     for _i in 0..line_length {
@@ -91,7 +91,7 @@ fn clear_line(line_length: usize) {
 use std::error::Error;
 use std::path::PathBuf;
 
-type BoxResult<T> = Result<T,Box<dyn Error>>;
+type BoxResult<T> = Result<T, Box<dyn Error>>;
 
 fn get_start_time() -> Result<DateTime<Utc>, String> {
     let uptime = uptime_lib::get();
@@ -103,11 +103,14 @@ fn get_start_time() -> Result<DateTime<Utc>, String> {
     // We assume that the system uptime is not impacted by any timezone changes.
     // To ensure that any timezone changes do not impact the consistency between start datetime and duration
     // we always represent it in UTC and just print the start time in the local timezone.
-    let start_uptime = now.checked_sub_signed(Duration::from_std(uptime.unwrap()).unwrap()).unwrap().with_timezone(&Utc);
+    let start_uptime = now
+        .checked_sub_signed(Duration::from_std(uptime.unwrap()).unwrap())
+        .unwrap()
+        .with_timezone(&Utc);
     let persisted_uptime = read_time();
     if persisted_uptime.is_err() {
         //eprintln!("Could not get persisted uptime {}", persisted_uptime.err().unwrap());
-        return Ok(start_uptime)
+        return Ok(start_uptime);
     }
     let parsed_datetime = persisted_uptime.unwrap();
     Ok(parsed_datetime.max(start_uptime))
@@ -116,9 +119,7 @@ fn get_start_time() -> Result<DateTime<Utc>, String> {
 fn get_file_path() -> BoxResult<PathBuf> {
     let mut p: PathBuf;
     match home::home_dir() {
-        Some(path) => {
-            p = path
-        },
+        Some(path) => p = path,
         None => bail!("Impossible to get your home dir!"),
     }
     p.push(".upt");
@@ -141,10 +142,10 @@ fn read_time() -> BoxResult<DateTime<Utc>> {
 fn main() {
     let cli = Cli::parse();
     match &cli.command {
-        Some(Commands::Completion { shell}) => {
+        Some(Commands::Completion { shell }) => {
             let mut app = Cli::command();
             print_completions(*shell, &mut app);
-            return
+            return;
         }
         None => {
             // handle below
@@ -152,7 +153,11 @@ fn main() {
     }
     if cli.version {
         let cli = Cli::command();
-        println!("{} {}", cli.get_display_name().unwrap_or_else(|| cli.get_name()), crate_version!()); // same implementation as the default clap version command
+        println!(
+            "{} {}",
+            cli.get_display_name().unwrap_or_else(|| cli.get_name()),
+            crate_version!()
+        ); // same implementation as the default clap version command
         return;
     }
     let mut start = get_start_time().unwrap();
@@ -174,10 +179,7 @@ fn main() {
         let (tx, rx) = channel();
         ctrlc::set_handler(move || tx.send(()).expect("Could not send signal on channel."))
             .expect("Error setting Ctrl-C handler");
-        execute!(
-            stdout(),
-            Hide
-        ).expect("Could not hide terminal cursor.");
+        execute!(stdout(), Hide).expect("Could not hide terminal cursor.");
         loop {
             // print the current duration
             let duration = render_duration(start, cli.iso);
@@ -189,10 +191,7 @@ fn main() {
             if rx.recv_timeout(sleep_millis).is_ok() {
                 // Received SIGTERM, perform cleanup by showing cursor again, go to a new line
                 // so that the next prompt is displayed cleanly before terminating.
-                execute!(
-                    stdout(),
-                    Show
-                ).expect("Could not hide terminal cursor.");
+                execute!(stdout(), Show).expect("Could not hide terminal cursor.");
                 println!();
                 break;
             }
