@@ -1,6 +1,7 @@
 use clap::{CommandFactory, Parser, Subcommand, Command, crate_version};
 use clap_complete::{generate, Generator, Shell};
-use std::io;
+use std::{fs, io};
+use std::fs::File;
 use std::time;
 use std::io::{stdout, Write};
 use std::ops::Sub;
@@ -12,6 +13,7 @@ use crossterm::{
     execute,
     cursor::{Hide, Show},
 };
+use simple_error::bail;
 
 #[derive(Parser)]
 #[clap(author="Christophe Kamphaus", about="A simple uptime CLI tool")]
@@ -86,6 +88,56 @@ fn clear_line(line_length: usize) {
     }
 }
 
+use std::error::Error;
+use std::path::PathBuf;
+
+type BoxResult<T> = Result<T,Box<dyn Error>>;
+
+fn get_start_time() -> Result<DateTime<Utc>, String> {
+    let uptime = uptime_lib::get();
+    if uptime.is_err() {
+        eprintln!("Cannot get uptime of system {}", uptime.unwrap_err());
+        return Err("".to_string());
+    }
+    let now = Local::now();
+    // We assume that the system uptime is not impacted by any timezone changes.
+    // To ensure that any timezone changes do not impact the consistency between start datetime and duration
+    // we always represent it in UTC and just print the start time in the local timezone.
+    let start_uptime = now.checked_sub_signed(Duration::from_std(uptime.unwrap()).unwrap()).unwrap().with_timezone(&Utc);
+    let persisted_uptime = read_time();
+    if persisted_uptime.is_err() {
+        //eprintln!("Could not get persisted uptime {}", persisted_uptime.err().unwrap());
+        return Ok(start_uptime)
+    }
+    let parsed_datetime = persisted_uptime.unwrap();
+    return Ok(parsed_datetime.max(start_uptime))
+}
+
+fn get_file_path() -> BoxResult<PathBuf> {
+    let mut p: PathBuf;
+    match home::home_dir() {
+        Some(path) => {
+            p = path
+        },
+        None => bail!("Impossible to get your home dir!"),
+    }
+    p.push(".upt");
+    return Ok(p)
+}
+
+fn persist_time(dt: DateTime<Utc>) -> BoxResult<()> {
+    let path = get_file_path()?;
+    let mut file = File::create(path.as_path())?;
+    file.write_all(dt.to_rfc3339().as_bytes())?;
+    return Ok(())
+}
+
+fn read_time() -> BoxResult<DateTime<Utc>> {
+    let persisted = fs::read_to_string(get_file_path()?)?;
+    let parsed = DateTime::parse_from_rfc3339(persisted.as_str())?;
+    return Ok(parsed.with_timezone(&Utc))
+}
+
 fn main() {
     let cli = Cli::parse();
     match &cli.command {
@@ -103,20 +155,16 @@ fn main() {
         println!("{} {}", cli.get_display_name().unwrap_or_else(|| cli.get_name()), crate_version!()); // same implementation as the default clap version command
         return;
     }
-    let start_result = uptime_lib::get();
-    if start_result.is_err() {
-        eprintln!("Cannot get uptime of system {}", start_result.unwrap_err());
-        return;
-    }
+    let mut start = get_start_time().unwrap();
     let now = Local::now();
-    // We assume that the system uptime is not impacted by any timezone changes.
-    // To ensure that any timezone changes do not impact the consistency between start datetime and duration
-    // we always represent it in UTC and just print the start time in the local timezone.
-    let mut start = now.checked_sub_signed(Duration::from_std(start_result.unwrap()).unwrap()).unwrap().with_timezone(&Utc);
-    // TODO: implement persistence
     if cli.reset {
         // reset the counter
-        start = now.with_timezone(&Utc);  // TODO: implement persistence
+        start = now.with_timezone(&Utc);
+        let result = persist_time(start);
+        if result.is_err() {
+            eprintln!("Could not reset the uptime: {}", result.err().unwrap());
+            return;
+        }
     }
     if cli.start {
         print_start(start.with_timezone(&Local), cli.iso);
