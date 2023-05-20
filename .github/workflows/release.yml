@@ -38,7 +38,7 @@ jobs:
         run: exit -1
 
   verify-release-draft:
-    name: "Verify release draft exists matching tag"
+    name: "Verify release draft exists"
     runs-on: "ubuntu-latest"
     steps:
       - name: "Get draft release for git tag"
