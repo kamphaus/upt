@@ -143,6 +143,8 @@ jobs:
     steps:
       - name: "Create SBOM"
         uses: anchore/sbom-action@v0
+        with:
+          output-file: ./
       - uses: actions/download-artifact@v3
         with:
           name: release-artifacts
