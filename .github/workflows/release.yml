@@ -39,7 +39,9 @@ jobs:
       - name: "Get draft release for git tag"
         id: "get_gh_release"
         run: |
-          echo RELEASE_JSON=$(curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -X POST -d '{ "query": "query { repository(owner:\"kamphaus\", name:\"upt\") { releases(orderBy:{field: CREATED_AT, direction: DESC}, first: 10) { nodes { id, isDraft, name } } } }" }' https://api.github.com/graphql | jq '.data.repository.releases.nodes[] | select(.name=="${{ github.ref_name }}") // {}') >> $GITHUB_OUTPUT
+          set -e
+          #echo RELEASE_JSON=$(curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -X POST -d '{ "query": "query { repository(owner:\"kamphaus\", name:\"upt\") { releases(orderBy:{field: CREATED_AT, direction: DESC}, first: 10) { nodes { id, isDraft, name } } } }" }' https://api.github.com/graphql | jq '.data.repository.releases.nodes[] | select(.name=="${{ github.ref_name }}") // {}') >> $GITHUB_OUTPUT
+          echo RELEASE_JSON=$(curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -X POST -d '{ "query": "query { repository(owner:\"kamphaus\", name:\"upt\") { releases(orderBy:{field: CREATED_AT, direction: DESC}, first: 10) { nodes { id, isDraft, name } } } }" }' https://api.github.com/graphql) >> $GITHUB_OUTPUT
       - name: "Exit if no draft release exists with name corresponding to git tag"
         if: fromJSON(steps.get_gh_release.outputs.RELEASE_JSON).isDraft != true
         run: exit -1
