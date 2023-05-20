@@ -1,0 +1,25 @@
+name: "Release"
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  verify-tag:
+    name: "Verify tag"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@v3
+      - name: "Exit if not on main branch"
+        if: endsWith(github.ref, 'master') == false
+        run: exit -1
+      - name: "Get package tag"
+        id: "get_pkg_tag"
+        shell: "bash"
+        run: |
+          echo PKG_VERSION="v$(awk -F ' = ' '$1 ~ /^version/ { gsub(/["]/, "", $2); printf("%s",$2) }' Cargo.toml)" >> $GITHUB_OUTPUT
+      - name: "Exit if mismatch between git and pkg tag"
+        if: steps.get_pkg_tag.outputs.PKG_VERSION != github.ref_name
+        run: exit -1
