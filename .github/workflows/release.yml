@@ -20,6 +20,26 @@ jobs:
         shell: "bash"
         run: |
           echo PKG_VERSION="v$(awk -F ' = ' '$1 ~ /^version/ { gsub(/["]/, "", $2); printf("%s",$2) }' Cargo.toml)" >> $GITHUB_OUTPUT
-      - name: "Exit if mismatch between git and pkg tag"
+      - name: "Exit if mismatch between git tag and pkg version"
         if: steps.get_pkg_tag.outputs.PKG_VERSION != github.ref_name
         run: exit -1
+
+  verify-release-draft:
+    name: "Verify release draft exists matching tag"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Get draft release for git tag"
+        id: "get_gh_release"
+        run: |
+          echo RELEASE_JSON=$(curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -X POST -d '{ "query": "query { repository(owner:\"kamphaus\", name:\"upt\") { releases(orderBy:{field: CREATED_AT, direction: DESC}, first: 10) { nodes { id, isDraft, name } } } }" }' https://api.github.com/graphql | jq '.data.repository.releases.nodes[] | select(.name=="${{ github.ref_name }}") // {}') >> $GITHUB_OUTPUT
+      - name: "Exit if no draft release exists with name corresponding to git tag"
+        if: fromJSON(steps.get_gh_release.outputs.RELEASE_JSON).isDraft != true
+        run: exit -1
+
+  build-release:
+    name: "Build release binaries"
+    runs-on: "ubuntu-latest"
+    needs: ["verify-tag", "verify-release-draft"]
+    steps:
+      - name: "Run build commands"
+        run: "echo 'Success..."
