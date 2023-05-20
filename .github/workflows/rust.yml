@@ -27,6 +27,7 @@ jobs:
       run: cargo test --verbose
     - name: Lint
       run: |
+        set -ex
         cargo fmt --all -- --check
         cargo clippy -- -Dwarnings
     - name: Install tool cargo-deny
@@ -43,6 +44,7 @@ jobs:
         crate: cargo-pants
     - name: Check
       run: |
+        set -ex
         cargo deny check
         cargo outdated --exit-code 1
         #cargo udeps
