@@ -144,7 +144,7 @@ jobs:
       - name: "Create SBOM"
         uses: anchore/sbom-action@v0
         with:
-          output-file: ./
+          output-file: ./upt-release-sbom.spdx.json
       - uses: actions/download-artifact@v3
         with:
           name: release-artifacts
