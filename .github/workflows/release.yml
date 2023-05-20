@@ -154,7 +154,8 @@ jobs:
         with:
           allowUpdates: true
           artifacts: "binaries/*"
-          prerelease: true
+          draft: true
+          updateOnlyUnreleased: true
           omitBodyDuringUpdate: true
       - name: "Generate subject for provenance"
         id: hash
@@ -174,12 +175,12 @@ jobs:
       contents: write # needed to be able to access draft releases
     runs-on: ubuntu-latest
     steps:
-      - name: "Remove prerelease status"
+      - name: "Publish the draft release"
         run: |
           set -euo pipefail
-          curl -L -X PATCH -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/kamphaus/upt/releases/${{ needs.verify-release-draft.outputs.releaseId }} -d '{"prerelease":"false"}'
+          curl -L -X PATCH -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/kamphaus/upt/releases/${{ needs.verify-release-draft.outputs.releaseId }} -d '{"draft":"false"}'
   provenance:
-    needs: [ "upload-artifacts" ] # The release needs to be associated to a tag for the SLSA workflow to publish the signature successfully
+    needs: [ "upload-artifacts", "publish-release" ] # The release needs to be associated to a tag for the SLSA workflow to publish the signature successfully
     permissions:
       actions: read   # To read the workflow path.
       id-token: write # To sign the provenance.
