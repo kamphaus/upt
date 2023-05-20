@@ -96,9 +96,9 @@ jobs:
           target: ${{ matrix.config.target }}
           override: true
           default: true
+      - uses: Swatinem/rust-cache@v2
       - name: "Checkout code"
         uses: actions/checkout@v3
-
       - name: Build upt
         uses: actions-rs/cargo@v1
         with:
