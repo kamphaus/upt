@@ -29,13 +29,18 @@ jobs:
       run: |
         cargo fmt --all -- --check
         cargo clippy -- -Dwarnings
-    - name: Install cargo check tools
-      run: |
-        cargo install --locked cargo-deny || true
-        cargo install --locked cargo-outdated || true
-        #cargo install --locked cargo-udeps || true
-        #cargo install --locked cargo-audit || true
-        cargo install --locked cargo-pants || true
+    - name: Install tool cargo-deny
+      uses: baptiste0928/cargo-install@v2
+      with:
+        crate: cargo-deny
+    - name: Install tool cargo-outdated
+      uses: baptiste0928/cargo-install@v2
+      with:
+        crate: cargo-outdated
+    - name: Install tool cargo-pants
+      uses: baptiste0928/cargo-install@v2
+      with:
+        crate: cargo-pants
     - name: Check
       run: |
         cargo deny check
