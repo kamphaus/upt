@@ -5,6 +5,9 @@ on:
     tags:
       - 'v[0-9]+.*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
+permissions:
+  contents: write # needed to be able to access draft releases
+
 jobs:
   verify-tag:
     name: "Verify tag"
