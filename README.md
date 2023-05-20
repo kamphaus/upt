@@ -1,5 +1,11 @@
 # upt
 
+![GitHub](https://img.shields.io/github/license/kamphaus/upt)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/kamphaus/upt)
+![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/kamphaus/upt/rust.yml?branch=main)
+![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/kamphaus/upt)
+![GitHub top language](https://img.shields.io/github/languages/top/kamphaus/upt)
+
 This is a simple alternative uptime CLI tool written in Rust.
 
 `upt` does not try to be equivalent to the `uptime` binary.<br>
