@@ -160,6 +160,10 @@ jobs:
           cd binaries
           ls -al
           files=$(ls upt*)
+          # For convenience we save all checksums in a file to be published in release
+          sha256sum $files > upt-checksums.txt
+          # Checksums file will also be covered by SLSA
+          files=$(ls upt*)
           # Generate the subjects (base64 encoded).
           echo "hashes=$(sha256sum $files | base64 -w0)" >> "${GITHUB_OUTPUT}"
           # the sbom action already uploaded this file, let's not upload it twice:
