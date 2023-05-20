@@ -74,8 +74,8 @@ jobs:
     runs-on: "ubuntu-latest"
     needs: ["build-release"]
     steps:
-      - name: ""
-        run: "echo 'Published!'"
+      - name: "Stop here for now"
+        run: "exit -1"
   provenance:
     needs: ["build-release", "publish-release"] # The release needds to be associated to a tag for the SLSA workflow to publish the signature successfully
     permissions:
