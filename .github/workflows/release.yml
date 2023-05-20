@@ -64,7 +64,7 @@ jobs:
       - name: "Update the tag of the draft release with the name corresponding to the tag name"
         run: |
           set -euo pipefail
-          curl -L -X PATCH -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/kamphaus/upt/releases/${{ needs.verify-release-draft.outputs.releaseId }} -d '{"tag_name":"${{ github.ref_name }}"}'
+          curl -L -X PATCH -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/kamphaus/upt/releases/${{ needs.verify-release-draft.outputs.releaseId }} -d '{"tag_name":"${{ github.ref_name }}","draft":false,"prerelease":true}'
   build-release:
     name: "Build release binaries"
     runs-on: ${{ matrix.config.os }}
@@ -154,8 +154,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts: "binaries/*"
-          draft: true
-          updateOnlyUnreleased: true
+          prerelease: true
           omitBodyDuringUpdate: true
       - name: "Generate subject for provenance"
         id: hash
@@ -168,26 +167,19 @@ jobs:
           files=$(ls upt*)
           # Generate the subjects (base64 encoded).
           echo "hashes=$(sha256sum $files | base64 -w0)" >> "${GITHUB_OUTPUT}"
-  troubleshoot:
-    name: "Publish release"
-    runs-on: "ubuntu-latest"
-    needs: ["upload-artifacts"]
-    steps:
-      - name: "Stop here for now"
-        run: "exit -1"
   publish-release:
     name: "Publish release"
-    needs: [ "troubleshoot", "verify-release-draft", "upload-artifacts" ]
+    needs: [ "verify-release-draft", "upload-artifacts" ]
     permissions:
       contents: write # needed to be able to access draft releases
     runs-on: ubuntu-latest
     steps:
-      - name: "Publish the draft release"
+      - name: "Remove prerelease status"
         run: |
           set -euo pipefail
-          curl -L -X PATCH -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/kamphaus/upt/releases/${{ needs.verify-release-draft.outputs.releaseId }} -d '{"draft":"false"}'
+          curl -L -X PATCH -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/kamphaus/upt/releases/${{ needs.verify-release-draft.outputs.releaseId }} -d '{"prerelease":"false"}'
   provenance:
-    needs: [ "upload-artifacts", "publish-release" ] # The release needs to be associated to a tag for the SLSA workflow to publish the signature successfully
+    needs: [ "upload-artifacts" ] # The release needs to be associated to a tag for the SLSA workflow to publish the signature successfully
     permissions:
       actions: read   # To read the workflow path.
       id-token: write # To sign the provenance.
