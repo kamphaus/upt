@@ -56,4 +56,4 @@ jobs:
     needs: ["verify-tag", "verify-release-draft"]
     steps:
       - name: "Run build commands"
-        run: "echo 'Success..."
+        run: "echo 'Success...'"
