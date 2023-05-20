@@ -5,8 +5,6 @@ on:
     tags:
       - 'v[0-9]+.*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
-permissions:
-  contents: write # needed to be able to access draft releases
 
 jobs:
   verify-tag:
@@ -36,10 +34,11 @@ jobs:
       - name: "Exit if mismatch between git tag and pkg version"
         if: steps.get_pkg_tag.outputs.PKG_VERSION != github.ref_name
         run: exit -1
-
   verify-release-draft:
     name: "Verify release draft exists"
     runs-on: "ubuntu-latest"
+    permissions:
+      contents: write # needed to be able to access draft releases
     steps:
       - name: "Get draft release for git tag"
         id: "get_gh_release"
