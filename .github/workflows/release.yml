@@ -141,6 +141,8 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
       - name: "Create SBOM"
         uses: anchore/sbom-action@v0
         with:
