@@ -90,21 +90,24 @@ jobs:
           - {os: windows-latest, toolchain: stable-x86_64-pc-windows-gnu, target: x86_64-pc-windows-gnu, cross: false}
           - {os: windows-latest, toolchain: stable-x86_64-pc-windows-msvc, target: x86_64-pc-windows-msvc, cross: false}
     steps:
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ matrix.config.toolchain }}
           target: ${{ matrix.config.target }}
-          override: true
-          default: true
       - uses: Swatinem/rust-cache@v2
       - name: "Checkout code"
         uses: actions/checkout@v3
       - name: Build upt
-        uses: actions-rs/cargo@v1
+        if: matrix.config.cross == false
+        run: "cargo rustc --release --target ${{ matrix.config.target }}"
+      - name: Install tool cross for crosscompile
+        uses: baptiste0928/cargo-install@v2
+        if: matrix.config.cross == true
         with:
-          use-cross: ${{ matrix.config.cross }}
-          command: rustc
-          args: --release --target ${{ matrix.config.target }}
+          crate: cross
+      - name: Build upt (crosscompile)
+        if: matrix.config.cross == true
+        run: "cross rustc --release --target ${{ matrix.config.target }}"
       - name: "Pack binaries if unix"
         if: matrix.config.os != 'windows-latest'
         run: tar -C ./target/${{ matrix.config.target }}/release -czvf upt-${{ github.ref_name }}-${{ matrix.config.target }}.tar.gz upt
