@@ -49,11 +49,14 @@ jobs:
       - name: "Exit if no draft release exists with name corresponding to git tag"
         if: fromJSON(steps.get_gh_release.outputs.RELEASE_JSON).isDraft != true
         run: exit -1
-
+  tests:
+    name: "Require regular build ok"
+    needs: [ "verify-tag", "verify-release-draft" ]
+    uses: ./.github/workflows/rust.yml
   build-release:
     name: "Build release binaries"
     runs-on: "ubuntu-latest"
-    needs: ["verify-tag", "verify-release-draft"]
+    needs: ["tests"]
     steps:
       - name: "Run build commands"
         run: "echo 'Success...'"
