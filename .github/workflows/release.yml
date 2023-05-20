@@ -39,6 +39,8 @@ jobs:
     runs-on: "ubuntu-latest"
     permissions:
       contents: write # needed to be able to access draft releases
+    outputs:
+      releaseId: ${{ fromJSON(steps.get_gh_release.outputs.RELEASE_JSON).id }}
     steps:
       - name: "Get draft release for git tag"
         id: "get_gh_release"
@@ -52,10 +54,21 @@ jobs:
     name: "Require ok tests"
     needs: [ "verify-tag", "verify-release-draft" ]
     uses: ./.github/workflows/rust.yml
+  release-tag:
+    name: "Link release with tag"
+    needs: [ "verify-release-draft", "tests" ]
+    permissions:
+      contents: write # needed to be able to access draft releases
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Update the tag of the draft release with the name corresponding to the tag name"
+        run: |
+          set -euo pipefail
+          curl -L -X PATCH -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/kamphaus/upt/releases/${{ needs.verify-release-draft.outputs.releaseId }} -d '{"tag_name":"${{ github.ref_name }}"}'
   build-release:
     name: "Build release binaries"
     runs-on: "ubuntu-latest"
-    needs: ["tests"]
+    needs: ["release-tag"]
     outputs:
       digests: ${{ steps.hash.outputs.digests }}
     steps:
