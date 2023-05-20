@@ -85,6 +85,8 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: "Create SBOM"
+        uses: anchore/sbom-action@v0
       - uses: actions/download-artifact@v3
         with:
           name: release-artifacts
@@ -101,6 +103,7 @@ jobs:
         id: hash
         run: |
           set -exuo pipefail
+          cp upt-release-sbom* binaries/
           # List the artifacts the provenance will refer to.
           cd binaries
           ls -al
