@@ -12,8 +12,16 @@ jobs:
     steps:
       - name: "Check out the repo"
         uses: actions/checkout@v3
+      - name: "Get current branch"
+        id: get_branch
+        run: |
+          set -e
+          raw=$(git branch -r --contains ${{ github.ref }})
+          branch=${raw##*/}
+          echo "BRANCH=$branch" >> $GITHUB_OUTPUT
+          echo "Tagged on branch $branch."
       - name: "Exit if not on main branch"
-        if: endsWith(github.ref, 'main') == false
+        if: steps.get_branch.outputs.BRANCH != 'main'
         run: exit -1
       - name: "Get package tag"
         id: "get_pkg_tag"
