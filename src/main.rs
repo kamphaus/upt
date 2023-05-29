@@ -116,7 +116,7 @@ fn get_system_start_time() -> Result<DateTime<Utc>, String> {
 fn get_start_time() -> Result<DateTime<Utc>, String> {
     let system_start_result = get_system_start_time();
     if system_start_result.is_err() {
-        return system_start_result
+        return system_start_result;
     }
     let start_uptime = system_start_result.unwrap();
     let persisted_uptime = read_time();
@@ -186,7 +186,7 @@ fn main() {
     if cli.system {
         let system_start = get_system_start_time();
         if system_start.is_err() {
-            return
+            return;
         }
         start = system_start.unwrap()
     }
