@@ -20,6 +20,8 @@ This does not influence the system uptime counter.
 This feature persists the timestamp from the moment the reset is performed.
 When evaluating the start time it chooses between the system uptime and the persisted timestamp to choose the latest instant.
 
+After a reset, it's possible to force the use of the system uptime by using the `--system` flag.
+
 All this is accomplished by relying on the fantastic Rust ecosystem and using preexisting crates as much as possible
 so as not to reinvent the wheel (e.g. using `clap` for CLI argument parsing and `chrono` for time manipulation).
 
