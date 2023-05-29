@@ -32,7 +32,7 @@ struct Cli {
     start: bool,
 
     /// Show the system uptime, disregarding any resets
-    #[arg(long)]
+    #[arg(long)] // no short argument to prevent collision with start flag
     system: bool,
 
     /// Instead of human readable duration print in ISO 8601 format
