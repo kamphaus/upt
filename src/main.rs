@@ -31,6 +31,10 @@ struct Cli {
     #[arg(short, long)]
     start: bool,
 
+    /// Show the system uptime, disregarding any resets
+    #[arg(long)]
+    system: bool,
+
     /// Instead of human readable duration print in ISO 8601 format
     #[arg(short, long)]
     iso: bool,
@@ -93,7 +97,7 @@ use std::path::PathBuf;
 
 type BoxResult<T> = Result<T, Box<dyn Error>>;
 
-fn get_start_time() -> Result<DateTime<Utc>, String> {
+fn get_system_start_time() -> Result<DateTime<Utc>, String> {
     let uptime = uptime_lib::get();
     if uptime.is_err() {
         eprintln!("Cannot get uptime of system {}", uptime.unwrap_err());
@@ -103,10 +107,18 @@ fn get_start_time() -> Result<DateTime<Utc>, String> {
     // We assume that the system uptime is not impacted by any timezone changes.
     // To ensure that any timezone changes do not impact the consistency between start datetime and duration
     // we always represent it in UTC and just print the start time in the local timezone.
-    let start_uptime = now
+    Ok(now
         .checked_sub_signed(Duration::from_std(uptime.unwrap()).unwrap())
         .unwrap()
-        .with_timezone(&Utc);
+        .with_timezone(&Utc))
+}
+
+fn get_start_time() -> Result<DateTime<Utc>, String> {
+    let system_start_result = get_system_start_time();
+    if system_start_result.is_err() {
+        return system_start_result
+    }
+    let start_uptime = system_start_result.unwrap();
     let persisted_uptime = read_time();
     if persisted_uptime.is_err() {
         //eprintln!("Could not get persisted uptime {}", persisted_uptime.err().unwrap());
@@ -170,6 +182,13 @@ fn main() {
             eprintln!("Could not reset the uptime: {}", result.err().unwrap());
             return;
         }
+    }
+    if cli.system {
+        let system_start = get_system_start_time();
+        if system_start.is_err() {
+            return
+        }
+        start = system_start.unwrap()
     }
     if cli.start {
         print_start(start.with_timezone(&Local), cli.iso);
