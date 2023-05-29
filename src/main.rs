@@ -114,11 +114,7 @@ fn get_system_start_time() -> Result<DateTime<Utc>, String> {
 }
 
 fn get_start_time() -> Result<DateTime<Utc>, String> {
-    let system_start_result = get_system_start_time();
-    if system_start_result.is_err() {
-        return system_start_result;
-    }
-    let start_uptime = system_start_result.unwrap();
+    let start_uptime = get_system_start_time()?;
     let persisted_uptime = read_time();
     if persisted_uptime.is_err() {
         //eprintln!("Could not get persisted uptime {}", persisted_uptime.err().unwrap());
