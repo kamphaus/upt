@@ -537,7 +537,7 @@ checksum = "b15811caf2415fb889178633e7724bad2509101cde276048e013b9def5e51fa0"
 
 [[package]]
 name = "upt"
-version = "1.1.0"
+version = "1.1.1"
 dependencies = [
  "chrono",
  "chrono-humanize",
