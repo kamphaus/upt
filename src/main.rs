@@ -1,4 +1,4 @@
-use chrono::{DateTime, Duration, Local, Utc};
+use chrono::{DateTime, Duration, Local, NaiveDateTime, Utc};
 use clap::{crate_version, Command, CommandFactory, Parser, Subcommand};
 use clap_complete::{generate, Generator, Shell};
 use std::fs::File;
@@ -143,7 +143,11 @@ fn persist_time(dt: DateTime<Utc>) -> BoxResult<()> {
 
 fn read_time() -> BoxResult<DateTime<Utc>> {
     let persisted = fs::read_to_string(get_file_path()?)?;
-    let parsed = DateTime::parse_from_rfc3339(persisted.as_str())?;
+    parse_time(persisted)
+}
+
+fn parse_time(date_str: String) -> BoxResult<DateTime<Utc>> {
+    let parsed = DateTime::parse_from_rfc3339(date_str.as_str())?;
     Ok(parsed.with_timezone(&Utc))
 }
 
@@ -223,4 +227,13 @@ fn main() {
 fn verify_cli() {
     use clap::CommandFactory;
     Cli::command().debug_assert()
+}
+
+#[test]
+fn test_date_parsing() {
+    let nt = NaiveDateTime::from_timestamp_opt(1685871491, 0);
+    let dt: DateTime<Utc> = DateTime::from_utc(nt.unwrap(), Utc);
+    assert_eq!(parse_time("2023-06-04T09:38:11.000000000+00:00".to_string()).unwrap(), dt);
+    assert_eq!(parse_time("2023-06-04T09:38:11.000000000+00:00\n".to_string()).unwrap(), dt);
+    assert_eq!(parse_time("2030604T09:xy:11.000000000+00:00".to_string()).is_err(), true)
 }
