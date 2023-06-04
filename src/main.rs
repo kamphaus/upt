@@ -147,7 +147,7 @@ fn read_time() -> BoxResult<DateTime<Utc>> {
 }
 
 fn parse_time(date_str: String) -> BoxResult<DateTime<Utc>> {
-    let parsed = DateTime::parse_from_rfc3339(date_str.as_str())?;
+    let parsed = DateTime::parse_from_rfc3339(date_str.trim())?;
     Ok(parsed.with_timezone(&Utc))
 }
 
