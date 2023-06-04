@@ -225,8 +225,8 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use chrono::{DateTime, Utc, NaiveDateTime};
     use super::*;
+    use chrono::{DateTime, NaiveDateTime, Utc};
 
     #[test]
     fn verify_cli() {
@@ -251,5 +251,4 @@ mod tests {
             true
         )
     }
-
 }
