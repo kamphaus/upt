@@ -80,16 +80,12 @@ fn render_duration(start: DateTime<Utc>, iso: bool) -> String {
 
 /// Overwrite the previous line when printing the next one, passing the length of the line to be overwritten
 fn clear_line(line_length: usize) {
-    for _i in 0..line_length {
-        print!("\r")
-    }
+    print!("\r");
     for _i in 0..line_length {
         // clear the line with spaces in case the next line is shorter
         print!(" ")
     }
-    for _i in 0..line_length {
-        print!("\r")
-    }
+    print!("\r")
 }
 
 use std::error::Error;
