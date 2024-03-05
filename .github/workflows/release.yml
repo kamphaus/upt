@@ -124,13 +124,13 @@ jobs:
         uses: actions/upload-artifact@v4
         if: matrix.config.os != 'windows-latest'
         with:
-          name: release-artifacts
+          name: release-artifacts-${{ matrix.config.target }}
           path: upt*.tar.gz
       - name: "Upload artifacts if windows"
         uses: actions/upload-artifact@v4
         if: matrix.config.os == 'windows-latest'
         with:
-          name: release-artifacts
+          name: release-artifacts-${{ matrix.config.target }}
           path: upt*.zip
   sbom:
     name: "Generate SBOM"
@@ -148,7 +148,7 @@ jobs:
       - name: "Upload SBOM artifact"
         uses: actions/upload-artifact@v4
         with:
-          name: release-artifacts
+          name: release-artifacts-sbom
           path: upt-release-sbom.spdx.json
   upload-artifacts:
     name: "Upload binaries to release"
@@ -161,8 +161,9 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: release-artifacts
           path: "binaries"
+          pattern: release-artifacts-*
+          merge-multiple: true
       - name: "Generate subject for provenance"
         id: hash
         run: |
