@@ -34,15 +34,15 @@ jobs:
         cargo fmt --all -- --check
         cargo clippy -- -Dwarnings
     - name: Install tool cargo-deny
-      uses: baptiste0928/cargo-install@v2
+      uses: baptiste0928/cargo-install@v3
       with:
         crate: cargo-deny
     - name: Install tool cargo-outdated
-      uses: baptiste0928/cargo-install@v2
+      uses: baptiste0928/cargo-install@v3
       with:
         crate: cargo-outdated
     - name: Install tool cargo-pants
-      uses: baptiste0928/cargo-install@v2
+      uses: baptiste0928/cargo-install@v3
       with:
         crate: cargo-pants
     - name: Check
