@@ -1,4 +1,4 @@
-use chrono::{DateTime, Duration, Local, Utc};
+use chrono::{DateTime, Duration, Local, TimeDelta, Utc};
 use clap::{crate_version, Command, CommandFactory, Parser, Subcommand};
 use clap_complete::{generate, Generator, Shell};
 use std::fs::File;
@@ -72,7 +72,7 @@ fn render_duration(start: DateTime<Utc>, iso: bool) -> String {
     if iso {
         return duration.to_string();
     }
-    let truncated = Duration::seconds(duration.num_seconds());
+    let truncated = TimeDelta::try_seconds(duration.num_seconds()).unwrap();
     let formatted =
         chrono_humanize::HumanTime::from(truncated).to_text_en(Accuracy::Precise, Tense::Present);
     formatted.replace(" and", ",")
