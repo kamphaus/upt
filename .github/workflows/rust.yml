@@ -41,6 +41,7 @@ jobs:
       uses: baptiste0928/cargo-install@v3
       with:
         crate: cargo-outdated
+        version: 0.11.2
     - name: Install tool cargo-pants
       uses: baptiste0928/cargo-install@v3
       with:
