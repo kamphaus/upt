@@ -37,10 +37,10 @@ jobs:
       uses: baptiste0928/cargo-install@v3
       with:
         crate: cargo-deny
-    #- name: Install tool cargo-outdated
-    #  uses: baptiste0928/cargo-install@v3
-    #  with:
-    #    crate: cargo-outdated
+    - name: Install tool cargo-outdated
+      uses: baptiste0928/cargo-install@v3
+      with:
+        crate: cargo-outdated
     - name: Install tool cargo-pants
       uses: baptiste0928/cargo-install@v3
       with:
@@ -49,7 +49,7 @@ jobs:
       run: |
         set -exuo pipefail
         cargo deny check
-        #cargo outdated --exit-code 1
+        cargo outdated --exit-code 1
         #cargo udeps
         #rm -rf ~/.cargo/advisory-db
         #cargo audit
