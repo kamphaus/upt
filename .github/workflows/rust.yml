@@ -24,6 +24,10 @@ jobs:
       with:
         cache-on-failure: "true"
 
+    - name: Print tool versions
+      run: |
+        rustc --version
+        cargo version
     - name: Build
       run: cargo build --verbose --locked
     - name: Run tests
@@ -41,7 +45,7 @@ jobs:
       uses: baptiste0928/cargo-install@v3
       with:
         crate: cargo-outdated
-        version: 0.11.2
+        version: 0.16.0
     - name: Install tool cargo-pants
       uses: baptiste0928/cargo-install@v3
       with:
