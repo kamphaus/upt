@@ -24,6 +24,10 @@ jobs:
       with:
         cache-on-failure: "true"
 
+    - name: Print tool versions
+      run: |
+        rustc --version
+        cargo version
     - name: Build
       run: cargo build --verbose --locked
     - name: Run tests
