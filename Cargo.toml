@@ -10,7 +10,7 @@ chrono = { version = "0.4.39", default-features = false, features = [] }
 chrono-humanize = "0.2.3"
 clap = { version = "4.5.34", features = ["derive", "cargo"] }
 clap_complete = "4.5.44"
-crossterm = "0.28.1"
+crossterm = "0.29.0"
 ctrlc = "3.4.4"
 home = "0.5.11"
 simple-error = "0.3.0"
