@@ -61,7 +61,7 @@ fn print_completions<G: Generator>(gen: G, cmd: &mut Command) {
 /// print the given start time, either in strict iso format or in simplified iso format
 fn print_start(start: DateTime<Local>, strict_iso: bool) {
     if strict_iso {
-        println!("Started {:?}", start);
+        println!("Started {start:?}");
     } else {
         println!("Started {}", start.format("%Y-%m-%d %H:%M:%S"));
     }
@@ -198,7 +198,7 @@ fn main() {
         loop {
             // print the current duration
             let duration = render_duration(start, cli.iso);
-            print!("{}", duration);
+            print!("{duration}");
 
             // need to flush before waiting so we are sure that the up-to-date duration is displayed
             stdout().flush().expect("Could not flush stdout");
