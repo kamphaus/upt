@@ -11,7 +11,7 @@ chrono-humanize = "0.2.3"
 clap = { version = "4.5.46", features = ["derive", "cargo"] }
 clap_complete = "4.5.56"
 crossterm = "0.29.0"
-ctrlc = "3.4.7"
+ctrlc = "3.5.0"
 home = "0.5.11"
 simple-error = "0.3.0"
 uptime_lib = "0.3.1"
