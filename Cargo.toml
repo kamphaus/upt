@@ -12,6 +12,6 @@ clap = { version = "4.5.50", features = ["derive", "cargo"] }
 clap_complete = "4.5.59"
 crossterm = "0.29.0"
 ctrlc = "3.5.0"
-home = "0.5.11"
+home = "0.5.12"
 simple-error = "0.3.2"
 uptime_lib = "0.3.1"
