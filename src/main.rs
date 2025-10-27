@@ -1,8 +1,8 @@
 use chrono::{DateTime, Duration, Local, TimeDelta, Utc};
-use clap::{crate_version, Command, CommandFactory, Parser, Subcommand};
-use clap_complete::{generate, Generator, Shell};
+use clap::{Command, CommandFactory, Parser, Subcommand, crate_version};
+use clap_complete::{Generator, Shell, generate};
 use std::fs::File;
-use std::io::{stdout, Write};
+use std::io::{Write, stdout};
 use std::ops::Sub;
 use std::sync::mpsc::channel;
 use std::time;
