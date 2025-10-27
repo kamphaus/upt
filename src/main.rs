@@ -54,8 +54,8 @@ enum Commands {
 }
 
 /// Prints the given autocompletion for the passed shell and command to stdout
-fn print_completions<G: Generator>(gen: G, cmd: &mut Command) {
-    generate(gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
+fn print_completions<G: Generator>(r#gen: G, cmd: &mut Command) {
+    generate(r#gen, cmd, cmd.get_name().to_string(), &mut io::stdout());
 }
 
 /// print the given start time, either in strict iso format or in simplified iso format
