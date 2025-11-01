@@ -121,13 +121,13 @@ jobs:
         if: matrix.config.os == 'windows-latest'
         run: "ls"
       - name: "Upload artifacts if unix"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: matrix.config.os != 'windows-latest'
         with:
           name: release-artifacts-${{ matrix.config.target }}
           path: upt*.tar.gz
       - name: "Upload artifacts if windows"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: matrix.config.os == 'windows-latest'
         with:
           name: release-artifacts-${{ matrix.config.target }}
@@ -146,7 +146,7 @@ jobs:
           upload-release-assets: false
           output-file: ./upt-release-sbom.spdx.json
       - name: "Upload SBOM artifact"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release-artifacts-sbom
           path: upt-release-sbom.spdx.json
