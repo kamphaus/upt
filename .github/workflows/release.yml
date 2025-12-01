@@ -12,7 +12,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: "Get current branch"
@@ -96,7 +96,7 @@ jobs:
           target: ${{ matrix.config.target }}
       - uses: Swatinem/rust-cache@v2
       - name: "Checkout code"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Build upt
         if: matrix.config.cross == false
         run: "cargo rustc --release --target ${{ matrix.config.target }}"
@@ -138,7 +138,7 @@ jobs:
     needs: [ "release-tag" ]
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: "Create SBOM"
         uses: anchore/sbom-action@v0
         with:
