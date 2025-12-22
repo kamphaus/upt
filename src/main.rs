@@ -94,17 +94,13 @@ use std::path::PathBuf;
 type BoxResult<T> = Result<T, Box<dyn Error>>;
 
 fn get_system_start_time() -> Result<DateTime<Utc>, String> {
-    let uptime = uptime_lib::get();
-    if uptime.is_err() {
-        eprintln!("Cannot get uptime of system {}", uptime.unwrap_err());
-        return Err("".to_string());
-    }
+    let uptime = uptime_lib::get().unwrap();
     let now = Local::now();
     // We assume that the system uptime is not impacted by any timezone changes.
     // To ensure that any timezone changes do not impact the consistency between start datetime and duration
     // we always represent it in UTC and just print the start time in the local timezone.
     Ok(now
-        .checked_sub_signed(Duration::from_std(uptime.unwrap()).unwrap())
+        .checked_sub_signed(Duration::from_std(uptime).unwrap())
         .unwrap()
         .with_timezone(&Utc))
 }
