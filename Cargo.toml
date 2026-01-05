@@ -9,7 +9,7 @@ edition = "2024"
 chrono = { version = "0.4.39", default-features = false, features = [] }
 chrono-humanize = "0.2.3"
 clap = { version = "4.5.52", features = ["derive", "cargo"] }
-clap_complete = "4.5.63"
+clap_complete = "4.5.64"
 crossterm = "0.29.0"
 ctrlc = "3.5.0"
 home = "0.5.12"
