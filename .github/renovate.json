@@ -1,14 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:best-practices",
+    "helpers:pinGitHubActionDigestsToSemver"
   ],
   "packageRules": [
     {
+      "groupName": "cargo",
       "matchManagers": ["cargo"],
       "schedule": ["* * * * 2-4"]
     },
     {
+      "groupName": "github actions",
       "matchManagers": ["github-actions"],
       "schedule": ["* * 19-20 * *"]
     }
