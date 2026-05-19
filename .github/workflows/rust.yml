@@ -16,11 +16,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
     # selecting a toolchain either by action or manual `rustup` calls should happen
     # before the plugin, as the cache uses the current rustc version as its cache key
     - run: rustup toolchain install stable --profile minimal
-    - uses: Swatinem/rust-cache@v2
+    - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
       with:
         cache-on-failure: "true"
 
@@ -38,16 +38,16 @@ jobs:
         cargo fmt --all -- --check
         cargo clippy -- -Dwarnings
     - name: Install tool cargo-deny
-      uses: baptiste0928/cargo-install@v3
+      uses: baptiste0928/cargo-install@f204293d9709061b7bc1756fec3ec4e2cd57dec0 # v3.4.0
       with:
         crate: cargo-deny
     - name: Install tool cargo-outdated
-      uses: baptiste0928/cargo-install@v3
+      uses: baptiste0928/cargo-install@f204293d9709061b7bc1756fec3ec4e2cd57dec0 # v3.4.0
       with:
         crate: cargo-outdated
         version: 0.17.0
     - name: Install tool cargo-pants
-      uses: baptiste0928/cargo-install@v3
+      uses: baptiste0928/cargo-install@f204293d9709061b7bc1756fec3ec4e2cd57dec0 # v3.4.0
       with:
         crate: cargo-pants
     - name: Check
