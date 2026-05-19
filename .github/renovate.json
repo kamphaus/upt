@@ -6,11 +6,11 @@
   "packageRules": [
     {
       "matchManagers": ["cargo"],
-      "schedule": ["* 0-4 * * 2"]
+      "schedule": ["* * * * 2-4"]
     },
     {
       "matchManagers": ["github-actions"],
-      "schedule": ["* 0-4 19 * *"]
+      "schedule": ["* * 19-20 * *"]
     }
   ]
 }
