@@ -12,7 +12,7 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
       - name: "Get current branch"
@@ -90,13 +90,13 @@ jobs:
           - {os: windows-latest, toolchain: stable-x86_64-pc-windows-gnu, target: x86_64-pc-windows-gnu, cross: false}
           - {os: windows-latest, toolchain: stable-x86_64-pc-windows-msvc, target: x86_64-pc-windows-msvc, cross: false}
     steps:
-      - uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
+      - uses: dtolnay/rust-toolchain@4cda84d5c5c54efe2404f9d843567869ab1699d4 # stable
         with:
           toolchain: ${{ matrix.config.toolchain }}
           target: ${{ matrix.config.target }}
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
       - name: "Checkout code"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - name: Build upt
         if: matrix.config.cross == false
         run: "cargo rustc --release --target ${{ matrix.config.target }}"
@@ -138,7 +138,7 @@ jobs:
     needs: [ "release-tag" ]
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
       - name: "Create SBOM"
         uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0.24.0
         with:
