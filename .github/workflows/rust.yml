@@ -20,7 +20,7 @@ jobs:
     # selecting a toolchain either by action or manual `rustup` calls should happen
     # before the plugin, as the cache uses the current rustc version as its cache key
     - run: rustup toolchain install stable --profile minimal
-    - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+    - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       with:
         cache-on-failure: "true"
 
