@@ -11,7 +11,7 @@ use crossterm::{
     execute,
 };
 use jiff::tz::{Offset, TimeZone};
-use jiff::{SignedDuration, Span, Timestamp, Zoned};
+use jiff::{SignedDuration, Span, Timestamp, ZonedDateTime};
 use simple_error::bail;
 
 #[derive(Parser)]
@@ -58,7 +58,7 @@ fn print_completions<G: Generator>(r#gen: G, cmd: &mut Command) {
 }
 
 /// print the given start time, either in strict iso format or in simplified iso format
-fn print_start(start: &Zoned, strict_iso: bool) {
+fn print_start(start: &ZonedDateTime, strict_iso: bool) {
     if strict_iso {
         println!(
             "Started {}",
@@ -217,7 +217,7 @@ fn main() {
         start = system_start.unwrap()
     }
     if cli.start {
-        print_start(&start.to_zoned(TimeZone::system()), cli.iso);
+        print_start(&start.to_zoned_datetime(TimeZone::system()), cli.iso);
     }
     if cli.watch {
         let sleep_millis = time::Duration::from_millis(5);
